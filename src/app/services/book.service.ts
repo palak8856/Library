@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import Books_List from '../books/books.data';
 import { Book } from '../interface/book';
 import { Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,8 @@ import { Router } from '@angular/router';
 export class BookService {
   books=Books_List;
   myBooks:Book[]=[];
+  private booksSubject = new BehaviorSubject<Book[]>(this.books);
+  private myBooksSubject = new BehaviorSubject<Book[]>(this.myBooks);
 
   constructor(private router:Router) { }
 
@@ -23,6 +26,14 @@ export class BookService {
     };
     this.books.push(newBook);
     this.router.navigate(["home"]);
+  }
+
+  getBooksObservable():Observable<Book[]>{
+    return this.booksSubject.asObservable();
+  }
+
+  getMyBooksObservable():Observable<Book[]>{
+    return this.myBooksSubject.asObservable();
   }
 
   getMyBooks(){
@@ -61,5 +72,7 @@ export class BookService {
   deleteBook(bookId:string){
     this.books = this.books.filter(book => book.id !== bookId);
    this.myBooks = this.myBooks.filter(book => book.id !== bookId);
+   this.booksSubject.next(this.books);
+   this.myBooksSubject.next(this.myBooks);
   }
 }
