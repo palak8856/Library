@@ -1,0 +1,65 @@
+import { Injectable } from '@angular/core';
+import Books_List from '../books/books.data';
+import { Book } from '../interface/book';
+import { Router } from '@angular/router';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class BookService {
+  books=Books_List;
+  myBooks:Book[]=[];
+
+  constructor(private router:Router) { }
+
+  addBook(book: { title: string; author: string; isbn: string }) {
+    const newBook: Book = {
+      id: (this.books.length + 1).toString(),
+      title: book.title,
+      author: book.author,
+      ISBN: book.isbn,
+      availability: true,
+      issuedByUser: null
+    };
+    this.books.push(newBook);
+    this.router.navigate(["home"]);
+  }
+
+  getMyBooks(){
+    return this.myBooks;
+  }
+
+  getBookById(id: string): Book | undefined {
+    return this.books.find(book => book.id === id);
+  }  
+
+  issueBook(book: Book) {
+    this.myBooks.push(book);
+    this.books = this.books.filter(b => b.id !== book.id);
+  }
+
+  updateBook(updatedBook: Book) {
+    const index = this.books.findIndex(book => book.id === updatedBook.id);
+    if (index !== -1) {
+      this.books[index] = updatedBook;
+    } 
+  
+    const myBookIndex = this.myBooks.findIndex(book => book.id === updatedBook.id);
+      if (myBookIndex !== -1) {
+        this.myBooks[myBookIndex] = updatedBook;
+    }
+  }
+
+  returnBook(book:Book){
+    const index = this.myBooks.findIndex(b => b.id === book.id);
+  if (index !== -1) {
+    this.myBooks.splice(index, 1); 
+    this.books.push(book);      
+  }
+  }
+
+  deleteBook(bookId:string){
+    this.books = this.books.filter(book => book.id !== bookId);
+   this.myBooks = this.myBooks.filter(book => book.id !== bookId);
+  }
+}

@@ -1,0 +1,14 @@
+<nav>
+    <ul>
+      <li *ngIf="userRole === 'Librarian'">
+        <a routerLink="/add-book">Add Book</a>
+      </li>
+      <li *ngIf="userRole === 'Member'">
+        <a routerLink="/my-books">My Books</a>
+      </li>
+      <li>
+        <button (click)="logout()">Logout</button>
+      </li>
+    </ul>
+</nav>
+  
